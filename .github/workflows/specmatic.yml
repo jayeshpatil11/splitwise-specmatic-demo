@@ -83,7 +83,7 @@ jobs:
             -w /workspace \
             specmatic/specmatic:latest \
             test \
-            --host http://localhost:9000 \
+            --host http://localhost:8000 \
             --schema-resiliency-tests=all \
             openapi/expense-sharing-api.yaml
 
