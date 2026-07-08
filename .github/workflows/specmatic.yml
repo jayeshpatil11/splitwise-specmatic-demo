@@ -1,0 +1,95 @@
+name: Specmatic Tests
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+  pull_request:
+
+jobs:
+  contract-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name: Start FastAPI
+        run: |
+          cd backend
+          nohup uvicorn main:app --host 0.0.0.0 --port 9000 > server.log 2>&1 &
+          sleep 15
+
+      - name: Verify Server
+        run: |
+          curl http://localhost:9000/expenses || true
+
+      - name: Run Contract Tests
+        run: |
+          docker run --network host \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            specmatic/specmatic:latest \
+            test \
+            --host http://localhost:9000 \
+            openapi/expense-sharing-api.yaml
+
+      - name: Upload Contract Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contract-test-report
+          path: build/reports/specmatic
+
+  schema-resiliency-tests:
+    needs: contract-tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name: Start FastAPI
+        run: |
+          cd backend
+          nohup uvicorn main:app --host 0.0.0.0 --port 9000 > server.log 2>&1 &
+          sleep 15
+
+      - name: Verify Server
+        run: |
+          curl http://localhost:9000/expenses || true
+
+      - name: Run Schema Resiliency Tests
+        run: |
+          docker run --network host \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            specmatic/specmatic:latest \
+            test \
+            --host http://localhost:9000 \
+            --schema-resiliency-tests=all \
+            openapi/expense-sharing-api.yaml
+
+      - name: Upload Resiliency Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resiliency-test-report
+          path: build/reports/specmatic
