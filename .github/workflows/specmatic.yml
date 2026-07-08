@@ -83,9 +83,8 @@ jobs:
             -w /workspace \
             specmatic/specmatic:latest \
             test \
-            --host http://localhost:8000 \
-            --schema-resiliency-tests=all \
-            openapi/expense-sharing-api.yaml
+            --config specmatic.yaml
+            
 
       - name: Upload Resiliency Report
         if: always()
