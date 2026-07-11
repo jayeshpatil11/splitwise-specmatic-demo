@@ -20,6 +20,10 @@ paths:
                 value:
                   name: Goa Trip
 
+              validationError:
+                value:
+                  name: 123
+
       responses:
         "201":
           description: Group Created

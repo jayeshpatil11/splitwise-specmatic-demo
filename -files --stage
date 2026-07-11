@@ -1,0 +1,17 @@
+[33mcommit 95eb6f3f85adc35e16c51e48d13f883ce9ffdd77[m
+Author: Jayesh Patil <jayeshpatil1103@gmail.com>
+Date:   Wed Jul 8 18:15:42 2026 +0530
+
+    Fixed Internal Logic and include both contract and resiliency tests separately in project and CI runs
+
+ create mode 100644 .github/workflows/specmatic.yml
+ create mode 100644 .gitignore
+ create mode 100644 README.md
+ create mode 160000 backend
+ create mode 100644 build/reports/specmatic/stub/html/index.html
+ create mode 100644 build/reports/specmatic/test/ctrf/ctrf-report.json
+ create mode 100644 build/reports/specmatic/test/html/index.html
+ create mode 100644 license.txt
+ create mode 100644 openapi/expense-sharing-api.yaml
+ create mode 100644 specmatic.yaml
+ create mode 100644 specmatic.yaml.backup

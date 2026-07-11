@@ -26,12 +26,12 @@ jobs:
       - name: Start FastAPI
         run: |
           cd backend
-          nohup uvicorn main:app --host 0.0.0.0 --port 9000 > server.log 2>&1 &
+          nohup uvicorn main:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
           sleep 15
 
       - name: Verify Server
         run: |
-          curl http://localhost:9000/expenses || true
+          curl http://localhost:8000/expenses || true
 
       - name: Run Contract Tests
         run: |
@@ -40,7 +40,9 @@ jobs:
             -w /workspace \
             specmatic/specmatic:latest \
             test \
-            --host http://localhost:9000 \
+            --config specmatic-contract.yaml \
+            --testBaseURL=http://localhost:8000 \
+            --junitReportDir=build/reports/contract \
             openapi/expense-sharing-api.yaml
 
       - name: Upload Contract Report
@@ -48,11 +50,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: contract-test-report
-          path: build/reports/specmatic
+          path: build/reports/contract
 
   schema-resiliency-tests:
     needs: contract-tests
-
     runs-on: ubuntu-latest
 
     steps:
@@ -69,12 +70,12 @@ jobs:
       - name: Start FastAPI
         run: |
           cd backend
-          nohup uvicorn main:app --host 0.0.0.0 --port 9000 > server.log 2>&1 &
+          nohup uvicorn main:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
           sleep 15
 
       - name: Verify Server
         run: |
-          curl http://localhost:9000/expenses || true
+          curl http://localhost:8000/expenses || true
 
       - name: Run Schema Resiliency Tests
         run: |
@@ -83,8 +84,9 @@ jobs:
             -w /workspace \
             specmatic/specmatic:latest \
             test \
-            --host http://localhost:8000 \
-            --schema-resiliency-tests=all \
+            --config specmatic-resiliency.yaml \
+            --testBaseURL=http://localhost:8000 \
+            --junitReportDir=build/reports/resiliency \
             openapi/expense-sharing-api.yaml
 
       - name: Upload Resiliency Report
@@ -92,4 +94,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: resiliency-test-report
-          path: build/reports/specmatic
+          path: build/reports/resiliency
