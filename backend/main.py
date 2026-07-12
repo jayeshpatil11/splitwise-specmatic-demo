@@ -34,7 +34,7 @@ def actuator_mappings():
                 "methods": sorted(list(route.methods)),
                 "name": route.name,
                 "summary": route.summary or "",
-                "operationId": route.operation_id or ""
+                "operationId": route.operation_id or route.name
             })
 
     mappings.sort(key=lambda x: x["path"])

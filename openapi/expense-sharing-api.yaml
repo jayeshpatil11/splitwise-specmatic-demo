@@ -257,6 +257,74 @@ paths:
                   value:
                     detail: Validation error
 
+  /actuator/mappings:
+    get:
+      summary: List registered endpoints
+
+      responses:
+        "200":
+          description: List of registered API endpoints
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActuatorMappingsResponse"
+
+              examples:
+                mappings:
+                  value:
+                    application: expense-sharing-api
+                    framework: FastAPI
+                    totalEndpoints: 7
+                    mappings:
+                      - path: /actuator/mappings
+                        methods:
+                          - GET
+                        name: actuator_mappings
+                        summary: List all registered API endpoints
+                        operationId: actuatorMappings
+
+                      - path: /groups
+                        methods:
+                          - POST
+                        name: create_group
+                        summary: Create Group
+                        operationId: createGroup
+
+                      - path: /groups/{groupId}
+                        methods:
+                          - GET
+                        name: get_group
+                        summary: Get Group
+                        operationId: getGroup
+
+                      - path: /expenses
+                        methods:
+                          - POST
+                        name: add_expense
+                        summary: Add Expense
+                        operationId: addExpense
+
+                      - path: /expenses
+                        methods:
+                          - GET
+                        name: get_expenses
+                        summary: Get Expenses
+                        operationId: getExpenses
+
+                      - path: /balances/{userId}
+                        methods:
+                          - GET
+                        name: get_balance
+                        summary: View Balance
+                        operationId: getBalance
+
+                      - path: /settlements
+                        methods:
+                          - POST
+                        name: create_settlement
+                        summary: Create Settlement
+                        operationId: createSettlement
+
 components:
   schemas:
     CreateGroupRequest:
@@ -388,3 +456,50 @@ components:
 
         paidBy:
           type: integer
+
+    ActuatorMapping:
+      type: object
+
+      required:
+        - path
+        - methods
+        - name
+        - summary
+        - operationId
+
+      properties:
+        path:
+          type: string
+        methods:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        summary:
+          type: string
+          nullable: true
+        operationId:
+          type: string
+          nullable: true
+
+    ActuatorMappingsResponse:
+      type: object
+
+      required:
+        - application
+        - framework
+        - totalEndpoints
+        - mappings
+
+      properties:
+        application:
+          type: string
+        framework:
+          type: string
+        totalEndpoints:
+          type: integer
+        mappings:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActuatorMapping"

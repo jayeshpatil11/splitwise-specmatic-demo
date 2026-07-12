@@ -31,17 +31,19 @@ jobs:
 
       - name: Verify Server
         run: |
-          curl http://localhost:8000/expenses || true
+          curl http://localhost:8000/expenses
 
       - name: Run Contract Tests
         run: |
-          docker run --network host \
+          docker run --rm \
+            --network host \
+            --add-host=host.docker.internal:host-gateway \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
             specmatic/specmatic:latest \
             test \
             --config specmatic-contract.yaml \
-            --testBaseURL=http://localhost:8000 \
+            --testBaseURL=http://host.docker.internal:8000 \
             --junitReportDir=build/reports/contract \
             openapi/expense-sharing-api.yaml
 
@@ -75,17 +77,19 @@ jobs:
 
       - name: Verify Server
         run: |
-          curl http://localhost:8000/expenses || true
+          curl http://localhost:8000/expenses
 
       - name: Run Schema Resiliency Tests
         run: |
-          docker run --network host \
+          docker run --rm \
+            --network host \
+            --add-host=host.docker.internal:host-gateway \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
             specmatic/specmatic:latest \
             test \
             --config specmatic-resiliency.yaml \
-            --testBaseURL=http://localhost:8000 \
+            --testBaseURL=http://host.docker.internal:8000 \
             --junitReportDir=build/reports/resiliency \
             openapi/expense-sharing-api.yaml
 
