@@ -19,6 +19,34 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Actuator
+
+from fastapi.routing import APIRoute
+
+@app.get("/actuator/mappings", tags=["Actuator"], summary="List all registered API endpoints")
+def actuator_mappings():
+    mappings = []
+
+    for route in app.routes:
+        if isinstance(route, APIRoute):
+            mappings.append({
+                "path": route.path,
+                "methods": sorted(list(route.methods)),
+                "name": route.name,
+                "summary": route.summary or "",
+                "operationId": route.operation_id or ""
+            })
+
+    mappings.sort(key=lambda x: x["path"])
+
+    return {
+        "application": "expense-sharing-api",
+        "framework": "FastAPI",
+        "totalEndpoints": len(mappings),
+        "mappings": mappings
+    }
+
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(
