@@ -6,6 +6,13 @@ components:
       filesystem:
         directory: .
 
+  runOptions:
+    expenseSharingTest:
+      openapi:
+        type: test
+        baseUrl: "{TEST_BASE_URL:http://host.docker.internal:8000}"
+        actuatorUrl: "{TEST_BASE_URL:http://host.docker.internal:8000}/actuator/mappings"
+
 systemUnderTest:
   service:
     definitions:
@@ -14,6 +21,9 @@ systemUnderTest:
             $ref: "#/components/sources/localContracts"
           specs:
             - openapi/expense-sharing-api.yaml
+
+    runOptions:
+      $ref: "#/components/runOptions/expenseSharingTest"
 
 specmatic:
   settings:

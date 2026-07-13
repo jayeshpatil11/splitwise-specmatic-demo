@@ -31,21 +31,20 @@ jobs:
 
       - name: Verify API
         run: |
-
           echo "Checking Docs..."
-          curl -v http://localhost:8000/docs
+          curl -f http://localhost:8000/docs
 
           echo "Checking OpenAPI..."
-          curl -v http://localhost:8000/openapi.json
+          curl -f http://localhost:8000/openapi.json
 
           echo "Checking Expenses..."
-          curl -v http://localhost:8000/expenses
+          curl -f http://localhost:8000/expenses
 
           echo "Checking Actuator..."
-          curl -v http://localhost:8000/actuator/mappings
+          curl -f http://localhost:8000/actuator/mappings
 
           echo ""
-          echo "Actuator is reachable."
+          echo "All endpoints are reachable."
 
       - name: Show Server Log
         if: always()
@@ -57,20 +56,19 @@ jobs:
           docker run --rm \
             --network host \
             curlimages/curl \
-            curl -i http://localhost:8000/actuator/mappings
+            curl -f http://localhost:8000/actuator/mappings
 
-      - name: Run Specmatic Tests (Contract + Schema Resiliency)
+      - name: Run Specmatic Tests
         run: |
           docker run --rm \
             --network host \
+            -e TEST_BASE_URL=http://localhost:8000 \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
             specmatic/specmatic:latest \
             test \
             --config specmatic.yaml \
-            --testBaseURL=http://localhost:8000 \
-            --junitReportDir=build/reports/specmatic \
-            openapi/expense-sharing-api.yaml
+            --junitReportDir=build/reports/specmatic
 
       - name: Upload Specmatic Report
         if: always()
