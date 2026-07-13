@@ -19,3 +19,15 @@ specmatic:
   settings:
     test:
       schemaResiliencyTests: all
+
+  governance:
+    report:
+      formats:
+        - html
+        - ctrf
+      outputDirectory: build/reports/specmatic
+
+    successCriteria:
+      minCoveragePercentage: 100
+      maxMissedOperationsInSpec: 0
+      enforce: true

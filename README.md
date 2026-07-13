@@ -1,4 +1,4 @@
-# Splitwise-like Expense Sharing Application using Specmatic
+# Expense Sharing Application using Specmatic
 
 A **contract-first Expense Sharing Application** inspired by Splitwise, built using **FastAPI**, **OpenAPI 3.0**, and **Specmatic**.
 
@@ -37,35 +37,35 @@ This project solves that problem using **Specmatic** by:
 
 ## Groups
 
-| Method | Endpoint |
-|---------|----------|
-| POST | /groups |
-| GET | /groups/{groupId} |
+| Method | Endpoint          |
+| ------ | ----------------- |
+| POST   | /groups           |
+| GET    | /groups/{groupId} |
 
 ## Expenses
 
-| Method | Endpoint |
-|---------|----------|
-| POST | /expenses |
-| GET | /expenses |
+| Method | Endpoint  |
+| ------ | --------- |
+| POST   | /expenses |
+| GET    | /expenses |
 
 ## Balances
 
-| Method | Endpoint |
-|---------|----------|
-| GET | /balances/{userId} |
+| Method | Endpoint           |
+| ------ | ------------------ |
+| GET    | /balances/{userId} |
 
 ## Settlements
 
-| Method | Endpoint |
-|---------|----------|
-| POST | /settlements |
+| Method | Endpoint     |
+| ------ | ------------ |
+| POST   | /settlements |
 
 ## Actuator
 
-| Method | Endpoint |
-|---------|----------|
-| GET | /actuator/mappings |
+| Method | Endpoint           |
+| ------ | ------------------ |
+| GET    | /actuator/mappings |
 
 The custom actuator endpoint exposes all registered FastAPI routes using `app.routes` and is covered by Specmatic contract tests.
 
@@ -90,8 +90,7 @@ splitwise-specmatic-demo
 │   └── workflows/
 │       └── specmatic.yml
 │
-├── specmatic-contract.yaml
-├── specmatic-resiliency.yaml
+├── specmatic.yaml
 └── README.md
 ```
 
@@ -219,7 +218,7 @@ Specmatic automatically generates mock APIs from the OpenAPI contract.
 
 ---
 
-# Running Contract Tests
+# Running Specmatic Tests (Contract Tests + Schema Resiliency Tests)
 
 Start the FastAPI application first.
 
@@ -232,7 +231,7 @@ MSYS_NO_PATHCONV=1 docker run --rm \
 --add-host=host.docker.internal:host-gateway \
 specmatic/specmatic:latest \
 test \
---config specmatic-contract.yaml \
+--config specmatic.yaml \
 --testBaseURL=http://host.docker.internal:8000
 ```
 
@@ -244,21 +243,6 @@ Contract testing validates:
 - Required fields
 - Data types
 - OpenAPI examples
-
----
-
-# Running Schema Resiliency Tests
-
-```bash
-MSYS_NO_PATHCONV=1 docker run --rm \
--v ${PWD}:/workspace \
--w /workspace \
---add-host=host.docker.internal:host-gateway \
-specmatic/specmatic:latest \
-test \
---config specmatic-resiliency.yaml \
---testBaseURL=http://host.docker.internal:8000
-```
 
 Schema resiliency testing automatically generates negative scenarios including:
 
@@ -272,20 +256,14 @@ Schema resiliency testing automatically generates negative scenarios including:
 
 ---
 
-# Contract Test Results
+# Specmatic Test Results
 
-✅ **12 / 12 Tests Passed**
+✅ **41 / 41 Tests Passed**
 
 - 100% API Coverage
 - No Contract Violations
 
----
-
-# Schema Resiliency Test Results
-
-✅ **41 / 41 Tests Passed**
-
-Automatically generated positive and negative scenarios validated successfully.
+- Automatically generated positive and negative scenarios validated successfully.
 
 ---
 
@@ -295,15 +273,9 @@ Every push and pull request automatically performs:
 
 - Install Dependencies
 - Start FastAPI Server
-- Run Contract Tests
-- Run Schema Resiliency Tests
-- Generate Separate Test Reports
+- Run Specmatic Tests
+- Generate Test Reports
 - Upload Reports as GitHub Artifacts
-
-The CI pipeline maintains **separate jobs** for:
-
-- Contract Testing
-- Schema Resiliency Testing
 
 ---
 
@@ -390,7 +362,7 @@ Through this project I learned:
 - ✅ Specmatic Contract Testing
 - ✅ Schema Resiliency Testing
 - ✅ 100% API Coverage
-- ✅ 41/41 Resiliency Tests Passed
+- ✅ 41/41 Specmatic Tests Passed
 - ✅ GitHub Actions CI/CD
 - ✅ Executable API Contracts
 

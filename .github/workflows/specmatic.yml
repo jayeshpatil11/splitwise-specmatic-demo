@@ -9,7 +9,7 @@ on:
   pull_request:
 
 jobs:
-  contract-tests:
+  specmatic-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,11 +19,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install Backend Dependencies
         run: |
           pip install -r backend/requirements.txt
 
-      - name: Start FastAPI
+      - name: Start FastAPI Server
         run: |
           cd backend
           nohup uvicorn main:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
@@ -31,9 +31,10 @@ jobs:
 
       - name: Verify Server
         run: |
-          curl http://localhost:8000/expenses
+          curl http://localhost:8000/docs
+          curl http://localhost:8000/actuator/mappings
 
-      - name: Run Contract Tests
+      - name: Run Specmatic Tests (Contract + Schema Resiliency)
         run: |
           docker run --rm \
             --network host \
@@ -42,60 +43,14 @@ jobs:
             -w /workspace \
             specmatic/specmatic:latest \
             test \
-            --config specmatic-contract.yaml \
+            --config specmatic.yaml \
             --testBaseURL=http://host.docker.internal:8000 \
-            --junitReportDir=build/reports/contract \
+            --junitReportDir=build/reports/specmatic \
             openapi/expense-sharing-api.yaml
 
-      - name: Upload Contract Report
+      - name: Upload Specmatic Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: contract-test-report
-          path: build/reports/contract
-
-  schema-resiliency-tests:
-    needs: contract-tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: |
-          pip install -r backend/requirements.txt
-
-      - name: Start FastAPI
-        run: |
-          cd backend
-          nohup uvicorn main:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
-          sleep 15
-
-      - name: Verify Server
-        run: |
-          curl http://localhost:8000/expenses
-
-      - name: Run Schema Resiliency Tests
-        run: |
-          docker run --rm \
-            --network host \
-            --add-host=host.docker.internal:host-gateway \
-            -v ${{ github.workspace }}:/workspace \
-            -w /workspace \
-            specmatic/specmatic:latest \
-            test \
-            --config specmatic-resiliency.yaml \
-            --testBaseURL=http://host.docker.internal:8000 \
-            --junitReportDir=build/reports/resiliency \
-            openapi/expense-sharing-api.yaml
-
-      - name: Upload Resiliency Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: resiliency-test-report
-          path: build/reports/resiliency
+          name: specmatic-test-report
+          path: build/reports/specmatic
