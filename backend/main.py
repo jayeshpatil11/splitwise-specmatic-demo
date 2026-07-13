@@ -23,7 +23,7 @@ app = FastAPI(
 
 from fastapi.routing import APIRoute
 
-@app.get("/actuator/mappings", tags=["Actuator"], summary="List all registered API endpoints")
+@app.get("/actuator/mappings", tags=["Actuator"], summary="List all registered API endpoints", operation_id="actuatorMappings")
 def actuator_mappings():
     mappings = []
 
@@ -33,7 +33,7 @@ def actuator_mappings():
                 "path": route.path,
                 "methods": sorted(list(route.methods)),
                 "name": route.name,
-                "summary": route.summary or "" ,
+                "summary": route.summary if route.summary else None ,
                 "operationId": route.operation_id or route.endpoint.__name__
             })
 
@@ -67,7 +67,9 @@ async def validation_exception_handler(
 @app.post(
     "/groups",
     response_model=GroupResponse,
-    status_code=201
+    status_code=201,
+    operation_id="createGroup",
+    summary="Create Group"
 )
 def create_group(request: CreateGroupRequest):
 
@@ -89,7 +91,9 @@ def create_group(request: CreateGroupRequest):
 
 @app.get(
     "/groups/{groupId}",
-    response_model=GroupResponse
+    response_model=GroupResponse,
+    operation_id="getGroup",
+    summary="Get Group"
 )
 def get_group(groupId: int):
 
@@ -106,7 +110,9 @@ def get_group(groupId: int):
 @app.post(
     "/expenses",
     response_model=ExpenseResponse,
-    status_code=201
+    status_code=201,
+    operation_id="addExpense",
+    summary="Add Expense"
 )
 def add_expense(request: AddExpenseRequest):
 
@@ -127,7 +133,11 @@ def add_expense(request: AddExpenseRequest):
     }
 
 
-@app.get("/expenses")
+@app.get(
+    "/expenses",
+    operation_id="getExpenses",
+    summary="Get Expenses"
+    )
 def get_expenses():
 
     return services.get_all_expenses()
@@ -138,7 +148,9 @@ def get_expenses():
 
 @app.get(
     "/balances/{userId}",
-    response_model=BalanceResponse
+    response_model=BalanceResponse,
+    operation_id="getBalance",
+    summary="View Balance"
 )
 def get_balance(userId: int):
 
@@ -151,7 +163,9 @@ def get_balance(userId: int):
 @app.post(
     "/settlements",
     response_model=SettlementResponse,
-    status_code=201
+    status_code=201,
+    operation_id="createSettlement",
+    summary="Create Settlement"
 )
 def create_settlement(request: SettlementRequest):
 
