@@ -27,25 +27,37 @@ jobs:
         run: |
           cd backend
           nohup uvicorn main:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
-          sleep 30
+          sleep 60
 
       - name: Verify API
         run: |
 
           echo "Checking Docs..."
-          curl --fail http://localhost:8000/docs
+          curl -v http://localhost:8000/docs
 
           echo "Checking OpenAPI..."
-          curl --fail http://localhost:8000/openapi.json
+          curl -v http://localhost:8000/openapi.json
 
           echo "Checking Expenses..."
-          curl --fail http://localhost:8000/expenses
+          curl -v http://localhost:8000/expenses
 
           echo "Checking Actuator..."
-          curl --fail http://localhost:8000/actuator/mappings
+          curl -v http://localhost:8000/actuator/mappings
 
           echo ""
           echo "Actuator is reachable."
+
+      - name: Show Server Log
+        if: always()
+        run: |
+          cat backend/server.log
+
+      - name: Verify Actuator From Docker
+        run: |
+          docker run --rm \
+            --network host \
+            curlimages/curl \
+            curl -i http://localhost:8000/actuator/mappings
 
       - name: Run Specmatic Tests (Contract + Schema Resiliency)
         run: |
