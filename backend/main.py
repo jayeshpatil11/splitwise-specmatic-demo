@@ -33,7 +33,7 @@ def actuator_mappings():
                 "path": route.path,
                 "methods": sorted(list(route.methods)),
                 "name": route.name,
-                "summary": route.summary or "",
+                "summary": route.summary ,
                 "operationId": route.operation_id or route.name
             })
 
