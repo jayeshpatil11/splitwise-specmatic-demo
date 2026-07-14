@@ -148,7 +148,15 @@ pip install -r requirements.txt
 ## Start FastAPI
 
 ```bash
-uvicorn main:app --reload
+cd backend
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+## macOS / Linux
+
+```bash
+cd backend
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Application
@@ -206,9 +214,21 @@ Example Response
 
 # Running Specmatic Mock Server
 
+## Windows (Git Bash)
+
 ```bash
 MSYS_NO_PATHCONV=1 docker run --rm \
 -v ${PWD}:/workspace \
+-w /workspace \
+specmatic/specmatic:latest \
+mock openapi/expense-sharing-api.yaml
+```
+
+## macOS / Linux
+
+```bash
+docker run --rm \
+-v "$(pwd)":/workspace \
 -w /workspace \
 specmatic/specmatic:latest \
 mock openapi/expense-sharing-api.yaml
@@ -224,6 +244,8 @@ Start the FastAPI application first.
 
 Then execute:
 
+## Windows (Git Bash)
+
 ```bash
 MSYS_NO_PATHCONV=1 docker run --rm \
 -v ${PWD}:/workspace \
@@ -233,6 +255,22 @@ specmatic/specmatic:latest \
 test \
 --config specmatic.yaml \
 --testBaseURL=http://host.docker.internal:8000
+```
+
+## macOS / Linux
+
+```bash
+export TEST_BASE_URL=http://host.docker.internal:8000
+
+docker run --rm \
+-v "$(pwd)":/workspace \
+-w /workspace \
+--add-host=host.docker.internal:host-gateway \
+-e TEST_BASE_URL=$TEST_BASE_URL \
+specmatic/specmatic:latest \
+test \
+--config specmatic.yaml \
+--testBaseURL=$TEST_BASE_URL
 ```
 
 Contract testing validates:
