@@ -305,6 +305,98 @@ Schema resiliency testing automatically generates negative scenarios including:
 
 ---
 
+## 📊 Generate API Coverage Report
+
+This project uses **Specmatic** to validate the API implementation against the OpenAPI contract and generate an API Coverage Report.
+
+### Prerequisites
+
+- Docker installed and running
+- Python 3.11+ (or your project's required version)
+- Project dependencies installed
+
+---
+
+### Step 1: Start the FastAPI Application
+
+Run the application locally:
+
+```bash
+uvicorn backend.main:app --host 0.0.0.0 --port 8000
+```
+
+Verify that the application is running by opening:
+
+```
+http://localhost:8000/docs
+```
+
+---
+
+### Step 2: Run Specmatic Tests
+
+Execute the following command:
+
+```bash
+docker run --rm \
+  --add-host=host.docker.internal:host-gateway \
+  -v ${PWD}:/workspace \
+  -w /workspace \
+  specmatic/specmatic:latest \
+  test \
+  --config specmatic.yaml \
+  --testBaseURL=http://host.docker.internal:8000
+```
+
+> **Windows (PowerShell):**
+
+```powershell
+docker run --rm `
+  --add-host=host.docker.internal:host-gateway `
+  -v "${PWD}:/workspace" `
+  -w /workspace `
+  specmatic/specmatic:latest `
+  test `
+  --config specmatic.yaml `
+  --testBaseURL=http://host.docker.internal:8000
+```
+
+---
+
+### Step 3: View the Coverage Report
+
+After the tests complete successfully, Specmatic generates the coverage reports in:
+
+```
+build/reports/specmatic/
+```
+
+The generated reports include:
+
+- `index.html` — Interactive HTML API Coverage Report
+- `ctrf-report.json` — CTRF report for CI/CD integrations
+
+Open the HTML report in your browser:
+
+```
+build/reports/specmatic/index.html
+```
+
+---
+
+### What the Coverage Report Shows
+
+The report provides:
+
+- ✅ Contract Test Results
+- ✅ API Coverage Percentage
+- ✅ Implemented Endpoints
+- ✅ Missing Endpoints
+- ✅ Schema Resiliency Test Results
+- ✅ Contract Validation Summary
+
+This helps ensure that the FastAPI implementation remains fully compliant with the OpenAPI specification.
+
 # GitHub Actions CI/CD
 
 Every push and pull request automatically performs:

@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expense-sharing-backend
+    ports:
+      - "8000:8000"
+
+  specmatic:
+    build:
+      context: .
+      dockerfile: Dockerfile.specmatic
+    container_name: specmatic-tests
+    depends_on:
+      - backend
+    command:
+      - test
+      - "--config=specmatic.yaml"
+      - "--testBaseURL=http://backend:8000"

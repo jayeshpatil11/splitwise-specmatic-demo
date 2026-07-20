@@ -1,0 +1,7 @@
+FROM specmatic/specmatic:latest
+
+WORKDIR /workspace
+
+COPY . .
+
+ENTRYPOINT ["specmatic"]

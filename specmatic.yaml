@@ -11,7 +11,7 @@ components:
       openapi:
         type: test
         baseUrl: "{TEST_BASE_URL:http://host.docker.internal:8000}"
-        actuatorUrl: "{TEST_BASE_URL:http://host.docker.internal:8000}/actuator/mappings"
+        swaggerUrl: "{TEST_BASE_URL:http://host.docker.internal:8000}/openapi.json"
 
 systemUnderTest:
   service:
